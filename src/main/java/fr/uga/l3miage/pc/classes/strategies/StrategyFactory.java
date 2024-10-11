@@ -2,9 +2,6 @@ package fr.uga.l3miage.pc.classes.strategies;
 
 import fr.uga.l3miage.pc.classes.game.GameManager;
 
-import java.util.Optional;
-import java.util.Random;
-
 public class StrategyFactory {
     private final String[] strategies = {"AlwaysBetray", "AlwaysCooperate"};
 
