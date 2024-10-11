@@ -3,8 +3,8 @@ package fr.uga.l3miage.pc.classes.game;
 import fr.uga.l3miage.pc.classes.strategies.StrategyFactory;
 import lombok.Getter;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
-import java.util.Optional;
 import java.util.Random;
 
 @Getter
@@ -13,7 +13,7 @@ public class GameManager {
 
     private final StrategyFactory strategyFactory = new StrategyFactory();
 
-    private Random random = new Random();
+    private Random random = new SecureRandom();
 
     private Game activeGame;
 
@@ -28,12 +28,18 @@ public class GameManager {
         return instance;
     }
 
-    public void startNewGameRandomStrategy(int turns) {
+    public void startNewGameRandomStrategy(int turns) throws IllegalArgumentException {
+        if (turns <= 0) {
+            throw new IllegalArgumentException("A game cannot last 0 turns");
+        }
         activeGame = new Game(turns);
         joinGame(new Tribe(), activeGame);
     }
 
-    public void startNewGameSetStrategy(int turns, String strategyName) {
+    public void startNewGameSetStrategy(int turns, String strategyName) throws IllegalArgumentException {
+        if (turns <= 0) {
+            throw new IllegalArgumentException("A game cannot last 0 turns");
+        }
         activeGame = new Game(turns, strategyName);
         Tribe tribe = new Tribe();
         joinGame(tribe, activeGame);

@@ -1,10 +1,7 @@
 package fr.uga.l3miage.pc.classes.game;
 
-import fr.uga.l3miage.pc.classes.strategies.Strategy;
 import fr.uga.l3miage.pc.enums.TribeAction;
 import lombok.Getter;
-
-import java.util.Optional;
 
 @Getter
 public class Game {

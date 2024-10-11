@@ -3,23 +3,31 @@ package fr.uga.l3miage.pc.prisonersdilemma;
 import fr.uga.l3miage.pc.classes.game.Game;
 import fr.uga.l3miage.pc.classes.game.GameManager;
 import fr.uga.l3miage.pc.enums.TribeAction;
+import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import java.security.SecureRandom;
 import java.util.Random;
 import static org.mockito.Mockito.*;
 
 class PrisonersDilemmaApplicationTests {
-	private final Random mockedRandom = mock(Random.class);
-
-	@Test
-	void contextLoads() {
-	}
+	private final Random mockedRandom = mock(SecureRandom.class);
+	private final GameManager gameManager = GameManager.getInstance();
 
 	@Test
 	void testGameManagerInstance() {
-		Assertions.assertNotNull(GameManager.getInstance());
-		Assertions.assertNotNull(GameManager.getInstance().getStrategyFactory());
-		Assertions.assertNotNull(GameManager.getInstance().getRandom());
+		Assertions.assertNotNull(gameManager);
+		Assertions.assertNotNull(gameManager.getStrategyFactory());
+		Assertions.assertNotNull(gameManager.getRandom());
+	}
+
+	@Test
+	void testGameCreation() {
+		Assertions.assertThrows(IllegalArgumentException.class, () -> { gameManager.startNewGameRandomStrategy(0); });
+		Assertions.assertThrows(IllegalArgumentException.class, () -> { gameManager.startNewGameSetStrategy(0, ""); });
+		gameManager.startNewGameRandomStrategy(1);
+		Assertions.assertNotNull(gameManager.getActiveGame());
 	}
 
 	@Test
@@ -36,7 +44,7 @@ class PrisonersDilemmaApplicationTests {
 
 	@Test
 	void testValidRandomAction() {
-		GameManager.getInstance().changeRandom(mockedRandom);
+		gameManager.changeRandom(mockedRandom);
 		when(mockedRandom.nextInt(2)).thenReturn(0);
 		Assertions.assertEquals(TribeAction.COOPERATE, TribeAction.returnRandomAction());
 		when(mockedRandom.nextInt(2)).thenReturn(1);
@@ -45,9 +53,9 @@ class PrisonersDilemmaApplicationTests {
 
 	@Test
 	void testPavlovRandom() {
-		GameManager.getInstance().changeRandom(mockedRandom);
-		GameManager.getInstance().startNewGameSetStrategy(5, "PavlovRandom");
-		Game game = GameManager.getInstance().getActiveGame();
+		gameManager.changeRandom(mockedRandom);
+		gameManager.startNewGameSetStrategy(5, "PavlovRandom");
+		Game game = gameManager.getActiveGame();
 		when(mockedRandom.nextInt(2)).thenReturn(0);
 		game.playTurn(TribeAction.COOPERATE);
 		Assertions.assertEquals(TribeAction.COOPERATE, game.getPreviousSystemTurnAction());
