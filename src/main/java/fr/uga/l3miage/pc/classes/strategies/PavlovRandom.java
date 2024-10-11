@@ -14,8 +14,8 @@ public class PavlovRandom implements Strategy {
             return TribeAction.returnRandomAction();
         }
         if (game.getPreviousSystemTurnScoring() == 3 || game.getPreviousSystemTurnScoring() == 5) {
-            return game.getPreviousSystemTurnAction();
+            return game.getPreviousTurnAction(0);
         }
-        return TribeAction.getOppositeAction(game.getPreviousSystemTurnAction());
+        return TribeAction.getOppositeAction(game.getPreviousTurnAction(0));
     }
 }

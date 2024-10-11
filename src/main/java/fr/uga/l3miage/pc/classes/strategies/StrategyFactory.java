@@ -13,6 +13,10 @@ public class StrategyFactory {
                 return new AlwaysCooperate();
             case "PavlovRandom":
                 return new PavlovRandom();
+            case "TruePeacemaker":
+                return new TruePeacemaker();
+            case "GiveAndTake":
+                return new GiveAndTake();
             default:
                 return createStrategy(getRandomStrategy());
         }

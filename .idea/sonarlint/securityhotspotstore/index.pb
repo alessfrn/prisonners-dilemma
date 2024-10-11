@@ -61,3 +61,9 @@ w
 Gsrc/main/java/fr/uga/l3miage/pc/classes/strategies/AlwaysCooperate.java,1/4/14a9d8500e16c7162e14d8623ec256d923162d13
 t
 Dsrc/main/java/fr/uga/l3miage/pc/classes/strategies/PavlovRandom.java,5/7/57b7ba151c05ce24a93c04033799087b401226dd
+t
+Dsrc/main/java/fr/uga/l3miage/pc/classes/strategies/TruePacifist.java,2/e/2e8b95acf5a065c76bd7e0841a1556da606c833f
+v
+Fsrc/main/java/fr/uga/l3miage/pc/classes/strategies/TruePeacemaker.java,f/9/f9d0819035b9de7abcee28cb11153aee3673e738
+s
+Csrc/main/java/fr/uga/l3miage/pc/classes/strategies/GiveAndTake.java,6/e/6e056990dee6b5cf791cb0769d98853bb890897b

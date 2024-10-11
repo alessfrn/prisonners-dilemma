@@ -3,6 +3,9 @@ package fr.uga.l3miage.pc.classes.game;
 import fr.uga.l3miage.pc.enums.TribeAction;
 import lombok.Getter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 public class Game {
     private Turn[] turns;
@@ -65,10 +68,21 @@ public class Game {
         throw new IllegalStateException("No previous turn");
     }
 
-    public TribeAction getPreviousSystemTurnAction() throws IllegalStateException {
+    public TribeAction getPreviousTurnAction(int player) throws IllegalStateException {
         if (currentTurn > 0) {
-            return turns[currentTurn - 1].getActions()[0].getAction();
+            return turns[currentTurn - 1].getActions()[player].getAction();
         }
         throw new IllegalStateException("No previous turn");
+    }
+
+    public List<TribeAction> getXPreviousTurnActions(int player, int nbTurns) throws IllegalStateException {
+        if (currentTurn < nbTurns) {
+            throw new IllegalStateException("Not enough turns to execute this method");
+        }
+        ArrayList<TribeAction> actions = new ArrayList<>();
+        for (int i = 1; i < nbTurns + 1; i++) {
+            actions.add(turns[currentTurn - i].getActions()[player].getAction());
+        }
+        return actions;
     }
 }

@@ -3,7 +3,6 @@ package fr.uga.l3miage.pc.prisonersdilemma;
 import fr.uga.l3miage.pc.classes.game.Game;
 import fr.uga.l3miage.pc.classes.game.GameManager;
 import fr.uga.l3miage.pc.enums.TribeAction;
-import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -52,22 +51,70 @@ class PrisonersDilemmaApplicationTests {
 	}
 
 	@Test
+	void testAlwaysBetray() {
+		gameManager.changeRandom(mockedRandom);
+		gameManager.startNewGameSetStrategy(5, "AlwaysBetray");
+		Game game = gameManager.getActiveGame();
+		game.playTurn(TribeAction.COOPERATE);
+		Assertions.assertEquals(TribeAction.BETRAY, game.getPreviousTurnAction(0));
+	}
+
+	@Test
+	void testAlwaysCooperate() {
+		gameManager.changeRandom(mockedRandom);
+		gameManager.startNewGameSetStrategy(5, "AlwaysCooperate");
+		Game game = gameManager.getActiveGame();
+		game.playTurn(TribeAction.COOPERATE);
+		Assertions.assertEquals(TribeAction.COOPERATE, game.getPreviousTurnAction(0));
+	}
+
+	@Test
 	void testPavlovRandom() {
 		gameManager.changeRandom(mockedRandom);
 		gameManager.startNewGameSetStrategy(5, "PavlovRandom");
 		Game game = gameManager.getActiveGame();
 		when(mockedRandom.nextInt(2)).thenReturn(0);
 		game.playTurn(TribeAction.COOPERATE);
-		Assertions.assertEquals(TribeAction.COOPERATE, game.getPreviousSystemTurnAction());
+		Assertions.assertEquals(TribeAction.COOPERATE, game.getPreviousTurnAction(0));
 		when(mockedRandom.nextInt(5)).thenReturn(4);
 		game.playTurn(TribeAction.BETRAY);
-		Assertions.assertEquals(TribeAction.COOPERATE, game.getPreviousSystemTurnAction());
+		Assertions.assertEquals(TribeAction.COOPERATE, game.getPreviousTurnAction(0));
 		game.playTurn(TribeAction.COOPERATE);
-		Assertions.assertEquals(TribeAction.BETRAY, game.getPreviousSystemTurnAction());
+		Assertions.assertEquals(TribeAction.BETRAY, game.getPreviousTurnAction(0));
 		game.playTurn(TribeAction.BETRAY);
-		Assertions.assertEquals(TribeAction.BETRAY, game.getPreviousSystemTurnAction());
+		Assertions.assertEquals(TribeAction.BETRAY, game.getPreviousTurnAction(0));
 		game.playTurn(TribeAction.COOPERATE);
-		Assertions.assertEquals(TribeAction.COOPERATE, game.getPreviousSystemTurnAction());
+		Assertions.assertEquals(TribeAction.COOPERATE, game.getPreviousTurnAction(0));
 	}
 
+	@Test
+	void testTruePeacemaker() {
+		gameManager.changeRandom(mockedRandom);
+		gameManager.startNewGameSetStrategy(5, "TruePeacemaker");
+		Game game = gameManager.getActiveGame();
+		when(mockedRandom.nextInt(5)).thenReturn(0);
+		game.playTurn(TribeAction.COOPERATE);
+		Assertions.assertEquals(TribeAction.COOPERATE, game.getPreviousTurnAction(0));
+		game.playTurn(TribeAction.BETRAY);
+		Assertions.assertEquals(TribeAction.COOPERATE, game.getPreviousTurnAction(0));
+		game.playTurn(TribeAction.BETRAY);
+		Assertions.assertEquals(TribeAction.COOPERATE, game.getPreviousTurnAction(0));
+		game.playTurn(TribeAction.BETRAY);
+		Assertions.assertEquals(TribeAction.BETRAY, game.getPreviousTurnAction(0));
+		when(mockedRandom.nextInt(5)).thenReturn(3);
+		game.playTurn(TribeAction.BETRAY);
+		Assertions.assertEquals(TribeAction.COOPERATE, game.getPreviousTurnAction(0));
+	}
+
+	@Test
+	void testGiveAndTake() {
+		gameManager.changeRandom(mockedRandom);
+		gameManager.startNewGameSetStrategy(5, "GiveAndTake");
+		Game game = gameManager.getActiveGame();
+		game.playTurn(TribeAction.COOPERATE);
+		game.playTurn(TribeAction.BETRAY);
+		Assertions.assertEquals(TribeAction.COOPERATE, game.getPreviousTurnAction(0));
+		game.playTurn(TribeAction.COOPERATE);
+		Assertions.assertEquals(TribeAction.BETRAY, game.getPreviousTurnAction(0));
+	}
 }
