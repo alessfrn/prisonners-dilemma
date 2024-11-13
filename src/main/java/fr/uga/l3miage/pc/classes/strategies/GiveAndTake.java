@@ -6,8 +6,7 @@ import fr.uga.l3miage.pc.enums.TribeAction;
 
 public class GiveAndTake implements Strategy {
     @Override
-    public TribeAction calculateAction() {
-        Game game = GameManager.getInstance().getActiveGame();
+    public TribeAction calculateAction(Game game) {
         if (game.getCurrentTurn() == 0) {
             return TribeAction.returnRandomAction();
         }

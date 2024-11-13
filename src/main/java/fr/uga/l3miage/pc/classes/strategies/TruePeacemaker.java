@@ -8,8 +8,7 @@ import java.util.List;
 
 public class TruePeacemaker implements Strategy {
     @Override
-    public TribeAction calculateAction() {
-        Game game = GameManager.getInstance().getActiveGame();
+    public TribeAction calculateAction(Game game) {
         if (game.getCurrentTurn() == 0 || game.getCurrentTurn() == 1 || GameManager.getInstance().getRandom().nextInt(5) == 3) {
             return TribeAction.COOPERATE;
         }
@@ -19,7 +18,7 @@ public class TruePeacemaker implements Strategy {
         return TribeAction.COOPERATE;
     }
 
-    public boolean checkForConsecutiveBetrayals(Game game) {
+    private boolean checkForConsecutiveBetrayals(Game game) {
         List<TribeAction> actions = game.getXPreviousTurnActions(1,2);
         return (actions.get(0).equals(actions.get(1)) && actions.get(0).equals(TribeAction.BETRAY));
     }

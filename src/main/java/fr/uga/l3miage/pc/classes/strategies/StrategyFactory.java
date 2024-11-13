@@ -1,28 +1,29 @@
 package fr.uga.l3miage.pc.classes.strategies;
 
 import fr.uga.l3miage.pc.classes.game.GameManager;
+import fr.uga.l3miage.pc.enums.Strategies;
 
 public class StrategyFactory {
-    private final String[] strategies = {"AlwaysBetray", "AlwaysCooperate"};
-
-    public Strategy createStrategy(String strategyName) {
-        switch(strategyName) {
-            case "AlwaysBetray":
+    public Strategy createStrategy(Strategies strategy) {
+        switch(strategy) {
+            case AlwaysBetray:
                 return new AlwaysBetray();
-            case "AlwaysCooperate":
+            case AlwaysCooperate:
                 return new AlwaysCooperate();
-            case "PavlovRandom":
+            case PavlovRandom:
                 return new PavlovRandom();
-            case "TruePeacemaker":
+            case TruePeacemaker:
                 return new TruePeacemaker();
-            case "GiveAndTake":
+            case GiveAndTake:
                 return new GiveAndTake();
+            case GiveAndTakeRandom:
+                return new GiveAndTakeRandom();
+            case GiveAndTake2:
+                return new GiveAndTake2();
+            case GiveAndTakeRandom2:
+                return new GiveAndTakeRandom2();
             default:
-                return createStrategy(getRandomStrategy());
+                return createStrategy(Strategies.getRandomStrategy());
         }
-    }
-
-    private String getRandomStrategy() {
-        return strategies[GameManager.getInstance().getRandom().nextInt(strategies.length)];
     }
 }

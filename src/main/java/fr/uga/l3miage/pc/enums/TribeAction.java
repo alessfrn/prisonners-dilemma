@@ -4,7 +4,8 @@ import fr.uga.l3miage.pc.classes.game.GameManager;
 
 public enum TribeAction {
     COOPERATE,
-    BETRAY;
+    BETRAY,
+    LEAVE;
 
     public static TribeAction getActionFromInteger(int integerAction) {
         if (integerAction == 0) {

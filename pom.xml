@@ -14,7 +14,7 @@
         <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <sonar.host.url>http://im2ag-sonar.u-ga.fr:9000</sonar.host.url>
+        <sonar.host.url>https://im2ag-sonar.univ-grenoble-alpes.fr</sonar.host.url>
     </properties>
     <dependencies>
         <dependency>
@@ -46,6 +46,26 @@
             <artifactId>commons-text</artifactId>
             <version>1.11.0</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-autoconfigure</artifactId>
+            <version>3.2.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <version>3.2.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+            <version>3.2.3</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
     <build>
@@ -79,11 +99,16 @@
                 </executions>
             </plugin>
             <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>3.2.3</version>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>11</source>
-                    <target>11</target>
+                    <source>16</source>
+                    <target>16</target>
                 </configuration>
             </plugin>
         </plugins>
