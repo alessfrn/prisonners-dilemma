@@ -21,10 +21,6 @@ public class Tribe {
         this.isPlayer = isPlayer;
     }
 
-    public Tribe(boolean isPlayer) {
-        this.isPlayer = isPlayer;
-    }
-
     public void playerToAI() {
         this.isPlayer = false;
     }

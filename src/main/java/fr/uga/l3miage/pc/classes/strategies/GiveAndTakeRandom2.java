@@ -19,7 +19,7 @@ public class GiveAndTakeRandom2 implements Strategy {
     }
 
     private TribeAction getConsecutiveMove(Game game) {
-        List<TribeAction> actions = game.getXPreviousTurnActions(1,2);
+        List<TribeAction> actions = game.getXPreviousTurnActions(0,2);
         if (actions.get(0).equals(actions.get(1))) {
             return actions.get(0);
         } else {

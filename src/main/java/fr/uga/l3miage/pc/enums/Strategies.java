@@ -21,7 +21,7 @@ public enum Strategies {
     Resentful,
     Pavlov,
     PavlovRandom,
-    Adaptative,
+    Adaptive,
     Gradual,
     SuspiciousGiveAndTake,
     SweetResentful,
@@ -30,7 +30,7 @@ public enum Strategies {
     public static Strategies getStrategyFromInteger(int integerStrategy) {
         return stream(Strategies.values())
                 .filter(strategy -> strategy.ordinal() == integerStrategy)
-                .collect(Collectors.toList())
+                .toList()
                 .get(0);
     }
 

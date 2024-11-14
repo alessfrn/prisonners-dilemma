@@ -10,6 +10,6 @@ public class GiveAndTake implements Strategy {
         if (game.getCurrentTurn() == 0) {
             return TribeAction.returnRandomAction();
         }
-        return game.getPreviousTurnAction(1);
+        return game.getPreviousTurnAction(0);
     }
 }

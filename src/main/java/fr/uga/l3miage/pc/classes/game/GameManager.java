@@ -1,10 +1,10 @@
 package fr.uga.l3miage.pc.classes.game;
 
-import fr.uga.l3miage.pc.Ex;
+import fr.uga.l3miage.pc.classes.strategies.Strategy;
 import fr.uga.l3miage.pc.classes.strategies.StrategyFactory;
-import fr.uga.l3miage.pc.enums.GameStatus;
 import fr.uga.l3miage.pc.enums.GameType;
 import fr.uga.l3miage.pc.enums.Strategies;
+import fr.uga.l3miage.pc.enums.TribeAction;
 import lombok.Getter;
 
 import java.security.SecureRandom;
@@ -31,7 +31,7 @@ public class GameManager {
         return instance;
     }
 
-    public Game startNewGameRandomStrategy(int turns, GameType gameType, Tribe tribe) throws IllegalArgumentException {
+    public Game startNewGame(int turns, GameType gameType, Tribe tribe) throws IllegalArgumentException {
         if (turns <= 0) {
             throw new IllegalArgumentException("A game cannot last 0 turns");
         }
@@ -41,8 +41,7 @@ public class GameManager {
         Game newGame = new Game(turns, gameType, tribe);
         if (gameType.equals(GameType.AI)) {
             try {
-                newGame.joinGame(new Tribe(strategyFactory.createStrategy(Strategies.getRandomStrategy()), false));
-                newGame.startGame();
+                newGame.joinGame(new Tribe(getRandomStrategy(), false));
             } catch (IllegalStateException e) {
                 System.out.println(e.getMessage());
             }
@@ -53,14 +52,9 @@ public class GameManager {
         return newGame;
     }
 
-//    public void startNewGameSetStrategy(int turns, Strategies strategy, GameType gameType, Tribe creator) throws IllegalArgumentException {
-//        if (turns <= 0) {
-//            throw new IllegalArgumentException("A game cannot last 0 turns");
-//        }
-//        Game activeGame = new Game(turns, strategy, gameType);
-//        if (gameType.equals(GameType.AI)) activeGame.joinGame(new Tribe(activeGame.getId(), 1, false));
-//        activeGames.add(activeGame);
-//    }
+    public Strategy getRandomStrategy() {
+        return strategyFactory.createStrategy(Strategies.getRandomStrategy());
+    }
 
     public void endGame(Game game, boolean leave) {
         game.finishGame(leave);
@@ -74,5 +68,9 @@ public class GameManager {
 
     public Game findGameWithID(UUID gameId) throws NoSuchElementException {
         return activeGames.stream().filter((x) -> x.getId().equals(gameId)).findFirst().orElseThrow();
+    }
+
+    public void disconnectUser(Tribe tribe) {
+        tribe.getGame().playTurn(TribeAction.LEAVE, Arrays.stream(tribe.getGame().getTribes()).toList().indexOf(tribe));
     }
 }

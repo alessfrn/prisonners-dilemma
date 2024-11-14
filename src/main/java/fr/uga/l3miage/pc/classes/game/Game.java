@@ -7,10 +7,12 @@ import fr.uga.l3miage.pc.enums.TribeAction;
 import lombok.Getter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
 import static java.lang.Math.abs;
+import static java.lang.Math.max;
 
 @Getter
 public class Game {
@@ -41,6 +43,7 @@ public class Game {
         if (tribes[1] == null) {
             tribes[1] = tribe;
             tribe.setGame(this);
+            startGame();
         } else {
             throw new IllegalStateException("Game is full");
         }
@@ -48,6 +51,9 @@ public class Game {
 
     public void playTurn(TribeAction playerAction, int playerIndex) {
         turnActions[playerIndex] = playerAction;
+        if (gameStatus.equals(GameStatus.WAITING_BOTH)) {
+            gameStatus = playerIndex == 0 ? GameStatus.WAITING_P2 : GameStatus.WAITING_P1;
+        }
         if (gameType.equals(GameType.AI)) {
             turnActions[abs(playerIndex - 1)] = tribes[abs(playerIndex - 1)].getStrategy().calculateAction(this);
         }
@@ -57,9 +63,6 @@ public class Game {
             } catch (IllegalStateException e) {
                 System.out.println(e.getMessage());
             }
-            turnActions[0] = null;
-            turnActions[1] = null;
-            currentTurn++;
         }
     }
 
@@ -69,6 +72,16 @@ public class Game {
     }
 
     public void resolveActions(TribeAction player1Action, TribeAction player2Action) throws IllegalStateException {
+        if ((player1Action.equals(TribeAction.LEAVE) && gameType.equals(GameType.AI)) || (player2Action.equals(TribeAction.LEAVE) && gameType.equals(GameType.AI)) || (player1Action.equals(TribeAction.LEAVE) && player2Action.equals(TribeAction.LEAVE))) {
+            GameManager.getInstance().endGame(this, true);
+            return;
+        } else if (player1Action.equals(TribeAction.LEAVE)) {
+            replacePlayerWithAI(0);
+            player1Action = tribes[0].getStrategy().calculateAction(this);
+        } else if (player2Action.equals(TribeAction.LEAVE)) {
+            replacePlayerWithAI(1);
+            player2Action = tribes[1].getStrategy().calculateAction(this);
+        }
         if (player1Action.equals(TribeAction.COOPERATE) && player2Action.equals(TribeAction.COOPERATE)) {
             turns[currentTurn] = new Turn(new TurnAction(player1Action, 3), new TurnAction(player2Action, 3));
         } else if (player1Action.equals(TribeAction.BETRAY) && player2Action.equals(TribeAction.BETRAY)) {
@@ -80,6 +93,13 @@ public class Game {
         } else {
             throw new IllegalStateException("Invalid actions");
         }
+        if (++currentTurn >= maxTurns) {
+            GameManager.getInstance().endGame(this, false);
+            return;
+        }
+        turnActions[0] = null;
+        turnActions[1] = null;
+        gameStatus = GameStatus.WAITING_BOTH;
     }
 
     public int fetchPreviousSystemTurnScoring() throws IllegalStateException {
@@ -107,28 +127,26 @@ public class Game {
         return actions;
     }
 
-    public void finishGame(boolean leave) throws IllegalArgumentException {
-        if (gameStatus.equals(GameStatus.PLAYING)) {
-            throw new IllegalArgumentException("Invalid game status");
-        }
+    public void finishGame(boolean leave) {
         if (leave) {
             gameStatus = GameStatus.ABANDONED;
         } else {
             gameStatus = GameStatus.COMPLETED;
         }
+        Arrays.stream(tribes).forEach(tribe -> { tribe.setGame(null); });
     }
 
     public void startGame() throws IllegalStateException {
-        if (gameStatus.equals(GameStatus.NEW) || gameStatus.equals(GameStatus.WAITING_FOR_PLAYERS)) {
-         this.gameStatus = GameStatus.PLAYING;
+        if (gameStatus.equals(GameStatus.NEW) || gameStatus.equals(GameStatus.OPEN_LOBBY)) {
+         this.gameStatus = GameStatus.WAITING_BOTH;
         } else {
-            throw new IllegalStateException("Game already started");
+            throw new IllegalStateException("Game cannot be started");
         }
     }
 
     public void openLobby() throws IllegalStateException {
         if (gameStatus.equals(GameStatus.NEW)) {
-            this.gameStatus = GameStatus.WAITING_FOR_PLAYERS;
+            this.gameStatus = GameStatus.OPEN_LOBBY;
         } else {
             throw new IllegalStateException("Game already started");
         }

@@ -19,7 +19,7 @@ public class TruePeacemaker implements Strategy {
     }
 
     private boolean checkForConsecutiveBetrayals(Game game) {
-        List<TribeAction> actions = game.getXPreviousTurnActions(1,2);
+        List<TribeAction> actions = game.getXPreviousTurnActions(0,2);
         return (actions.get(0).equals(actions.get(1)) && actions.get(0).equals(TribeAction.BETRAY));
     }
 }

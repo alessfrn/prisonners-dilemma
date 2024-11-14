@@ -22,6 +22,10 @@ public class StrategyFactory {
                 return new GiveAndTake2();
             case GiveAndTakeRandom2:
                 return new GiveAndTakeRandom2();
+            case NaiveProber:
+                return new NaiveProber();
+            case RepentantProber:
+                return new RepentantProber();
             default:
                 return createStrategy(Strategies.getRandomStrategy());
         }

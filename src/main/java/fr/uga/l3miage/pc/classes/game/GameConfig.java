@@ -1,6 +1,7 @@
 package fr.uga.l3miage.pc.classes.game;
 
 import fr.uga.l3miage.pc.enums.GameType;
+import fr.uga.l3miage.pc.enums.TribeAction;
 import lombok.Getter;
 
 import java.util.UUID;
@@ -11,6 +12,8 @@ public class GameConfig {
     private GameType gameType;
     private UUID userId;
     private UUID gameId;
+    private TribeAction action;
+    private int playerIndex;
 
     public GameConfig() {}
 
@@ -23,6 +26,12 @@ public class GameConfig {
     public GameConfig(UUID userId, UUID gameId) {
         this.userId = userId;
         this.gameId = gameId;
+    }
+
+    public GameConfig(UUID userId, TribeAction action, int playerIndex) {
+        this.userId = userId;
+        this.action = action;
+        this.playerIndex = playerIndex;
     }
 
 }
