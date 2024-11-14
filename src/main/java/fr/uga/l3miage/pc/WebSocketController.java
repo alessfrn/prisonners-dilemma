@@ -6,8 +6,10 @@ import fr.uga.l3miage.pc.classes.game.GameManager;
 import fr.uga.l3miage.pc.classes.game.Tribe;
 import fr.uga.l3miage.pc.enums.GameStatus;
 import fr.uga.l3miage.pc.enums.Strategies;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
+import org.springframework.messaging.MessageDeliveryException;
 import org.springframework.messaging.handler.annotation.*;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SendToUser;
@@ -19,6 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Controller
 public class WebSocketController {
+    @Getter
     Map<UUID, Tribe> world = new ConcurrentHashMap<>();
     private final SimpMessagingTemplate template ;
 
@@ -29,7 +32,7 @@ public class WebSocketController {
 
     @MessageMapping("/register")
     @SendToUser("queue/register")
-    public String registerPlayer(@Header("simpSessionId") String sessionId) throws Exception {
+    public String registerPlayer(@Header("simpSessionId") String sessionId) {
         UUID uuid = UUID.fromString(sessionId);
         world.put(uuid, new Tribe(GameManager.getInstance().getStrategyFactory().createStrategy(Strategies.GetRandomStrategy), true));
         return uuid.toString();
@@ -37,14 +40,13 @@ public class WebSocketController {
 
     @MessageMapping("/create-game")
     @SendToUser("queue/create-game")
-    public String greeting(@Payload GameConfig config) {
+    public String createGame(@Payload GameConfig config) {
         try {
             Game game = GameManager.getInstance().startNewGame(config.getMaxTurns(), config.getGameType(), world.get(config.getUserId()));
             return game.getId().toString();
         } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
+            return null;
         }
-        return null;
     }
 
     @MessageMapping("/status")
@@ -61,12 +63,12 @@ public class WebSocketController {
 
     @MessageMapping("/join")
     public void joinGame(@Payload GameConfig gameConfig) {
+        Game game = GameManager.getInstance().findGameWithID(gameConfig.getGameId());
+        game.joinGame(world.get(gameConfig.getUserId()));
         try {
-            Game game = GameManager.getInstance().findGameWithID(gameConfig.getGameId());
-            game.joinGame(world.get(gameConfig.getUserId()));
             template.convertAndSend("/queue/status/" + game.getId().toString(), getGameStatus(game.getGameStatus()));
-        } catch (NoSuchElementException | IllegalStateException e) {
-            System.out.println(e.getMessage());
+        } catch (MessageDeliveryException e) {
+            System.out.println("Cannot send message");
         }
     }
 
@@ -74,7 +76,11 @@ public class WebSocketController {
     public void takeAction(@Payload GameConfig gameConfig) {
         Game game = world.get(gameConfig.getUserId()).getGame();
         game.playTurn(gameConfig.getAction(), gameConfig.getPlayerIndex());
-        template.convertAndSend("/queue/status/" + game.getId().toString(), getGameStatus(game.getGameStatus()));
+        try {
+            template.convertAndSend("/queue/status/" + game.getId().toString(), getGameStatus(game.getGameStatus()));
+        } catch (MessageDeliveryException e) {
+            System.out.println("Cannot send message");
+        }
     }
 
     @EventListener

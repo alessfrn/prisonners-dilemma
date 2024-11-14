@@ -26,6 +26,8 @@ public class StrategyFactory {
                 return new NaiveProber();
             case RepentantProber:
                 return new RepentantProber();
+            case Random:
+                return new Random();
             default:
                 return createStrategy(Strategies.getRandomStrategy());
         }

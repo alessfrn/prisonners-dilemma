@@ -8,10 +8,7 @@ import java.util.List;
 
 public class GiveAndTake2 implements Strategy {
     @Override
-    public TribeAction calculateAction(Game game) throws IllegalStateException {
-        if (game == null) {
-            throw new IllegalStateException("No active game");
-        }
+    public TribeAction calculateAction(Game game) {
         if (game.getCurrentTurn() <= 1) {
             return TribeAction.returnRandomAction();
         }

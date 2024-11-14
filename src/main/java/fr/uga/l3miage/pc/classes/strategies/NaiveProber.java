@@ -6,10 +6,7 @@ import fr.uga.l3miage.pc.enums.TribeAction;
 
 public class NaiveProber implements Strategy  {
     @Override
-    public TribeAction calculateAction(Game game) throws IllegalStateException {
-        if (game == null) {
-            throw new IllegalStateException("No active game");
-        }
+    public TribeAction calculateAction(Game game) {
         if (game.getCurrentTurn() == 0) {
             return TribeAction.returnRandomAction();
         }

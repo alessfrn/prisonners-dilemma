@@ -8,10 +8,7 @@ public class RepentantProber implements Strategy  {
     private boolean testDone = false;
     private int testTurn;
     @Override
-    public TribeAction calculateAction(Game game) throws IllegalStateException {
-        if (game == null) {
-            throw new IllegalStateException("No active game");
-        }
+    public TribeAction calculateAction(Game game) {
         if (game.getCurrentTurn() == 0) {
             return TribeAction.returnRandomAction();
         }
