@@ -13,7 +13,7 @@ public class Tribe {
     @JsonIgnore
     private Strategy strategy;
     @Setter
-    private UUID gameId;
+    private Game game;
     private boolean isPlayer;
 
     public Tribe(Strategy strategy, boolean isPlayer) {

@@ -3,7 +3,6 @@ package fr.uga.l3miage.pc.classes.game;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import fr.uga.l3miage.pc.enums.GameStatus;
 import fr.uga.l3miage.pc.enums.GameType;
-import fr.uga.l3miage.pc.enums.Strategies;
 import fr.uga.l3miage.pc.enums.TribeAction;
 import lombok.Getter;
 
@@ -35,12 +34,13 @@ public class Game {
         this.gameType = gameType;
         this.turns = new Turn[turns];
         this.tribes[0] = creator;
-        creator.setGameId(this.id);
+        creator.setGame(this);
     }
 
     public void joinGame(Tribe tribe) throws IllegalStateException {
         if (tribes[1] == null) {
             tribes[1] = tribe;
+            tribe.setGame(this);
         } else {
             throw new IllegalStateException("Game is full");
         }
@@ -82,7 +82,7 @@ public class Game {
         }
     }
 
-    public int getPreviousSystemTurnScoring() throws IllegalStateException {
+    public int fetchPreviousSystemTurnScoring() throws IllegalStateException {
         if (currentTurn > 0) {
             return turns[currentTurn - 1].getActions()[0].getScoring();
         }

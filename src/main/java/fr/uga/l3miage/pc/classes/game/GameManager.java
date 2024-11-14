@@ -35,6 +35,9 @@ public class GameManager {
         if (turns <= 0) {
             throw new IllegalArgumentException("A game cannot last 0 turns");
         }
+        if (tribe.getGame() != null) {
+            throw new IllegalArgumentException("Tribe is already in a game");
+        }
         Game newGame = new Game(turns, gameType, tribe);
         if (gameType.equals(GameType.AI)) {
             try {
