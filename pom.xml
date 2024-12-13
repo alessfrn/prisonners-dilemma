@@ -67,6 +67,11 @@
             <version>3.2.3</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>fr.uga.miage.m1</groupId>
+            <artifactId>my_projet_g1_10</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
