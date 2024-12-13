@@ -1,6 +1,6 @@
 package fr.uga.l3miage.pc.classes.strategies;
 
-import fr.uga.l3miage.pc.classes.game.GameManager;
+import fr.uga.l3miage.pc.Adapter;
 import fr.uga.l3miage.pc.enums.Strategies;
 
 public class StrategyFactory {
@@ -28,6 +28,10 @@ public class StrategyFactory {
                 return new RepentantProber();
             case Random:
                 return new Random();
+            case AlwaysBetrayFromRachid:
+                return new Adapter(Strategies.AlwaysBetrayFromRachid);
+            case AlwaysCooperateFromRachid:
+                return new Adapter(Strategies.AlwaysCooperateFromRachid);
             default:
                 return createStrategy(Strategies.getRandomStrategy());
         }

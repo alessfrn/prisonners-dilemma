@@ -25,7 +25,9 @@ public enum Strategies {
     Gradual,
     SuspiciousGiveAndTake,
     SweetResentful,
-    GetRandomStrategy;
+    GetRandomStrategy,
+    AlwaysBetrayFromRachid, // Strategy that will be taken from the other group's project
+    AlwaysCooperateFromRachid; // Strategy that will be taken from the other group's project
 
     public static Strategies getStrategyFromInteger(int integerStrategy) {
         return stream(Strategies.values())

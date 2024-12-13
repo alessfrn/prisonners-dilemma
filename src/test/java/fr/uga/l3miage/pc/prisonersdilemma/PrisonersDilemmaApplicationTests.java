@@ -1,5 +1,6 @@
 package fr.uga.l3miage.pc.prisonersdilemma;
 
+import fr.uga.l3miage.pc.Adapter;
 import fr.uga.l3miage.pc.WebSocketController;
 import fr.uga.l3miage.pc.classes.game.Game;
 import fr.uga.l3miage.pc.classes.game.GameConfig;
@@ -10,6 +11,9 @@ import fr.uga.l3miage.pc.enums.GameStatus;
 import fr.uga.l3miage.pc.enums.GameType;
 import fr.uga.l3miage.pc.enums.Strategies;
 import fr.uga.l3miage.pc.enums.TribeAction;
+import fr.uga.miage.m1.my_projet_g1_10.enums.Decision;
+import fr.uga.miage.m1.my_projet_g1_10.strategies.ToujoursCooperer;
+import fr.uga.miage.m1.my_projet_g1_10.strategies.ToujoursTrahir;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +23,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
@@ -337,6 +342,40 @@ class PrisonersDilemmaApplicationTests {
 		when(mockedRandom.nextInt(2)).thenReturn(1);
 		game.playTurn(TribeAction.BETRAY, 0);
 		Assertions.assertEquals(TribeAction.BETRAY, game.getPreviousTurnAction(1));
+	}
+
+	@Test
+	void testAdapter() {
+		gameManager.changeRandom(mockedRandom);
+		when(mockedRandom.nextInt(strategiesNumber)).thenReturn(19);
+		Game game = gameManager.startNewGame(5, GameType.AI, tribeGenerator());
+		Assertions.assertInstanceOf(Adapter.class, game.getTribes()[1].getStrategy());
+		Adapter adapter = (Adapter) game.getTribes()[1].getStrategy();
+		Assertions.assertInstanceOf(ToujoursTrahir.class, adapter.strategyFromRachid);
+		when(mockedRandom.nextInt(strategiesNumber)).thenReturn(20);
+		Game game2 = gameManager.startNewGame(5, GameType.AI, tribeGenerator());
+		Assertions.assertInstanceOf(Adapter.class, game2.getTribes()[1].getStrategy());
+		Adapter adapter2 = (Adapter) game2.getTribes()[1].getStrategy();
+		Assertions.assertInstanceOf(ToujoursCooperer.class, adapter2.strategyFromRachid);
+
+		Assertions.assertEquals(Decision.COOPERER, adapter.convertTribeActionToDecision(TribeAction.COOPERATE));
+		Assertions.assertEquals(Decision.TRAHIR, adapter.convertTribeActionToDecision(TribeAction.BETRAY));
+		Assertions.assertEquals(TribeAction.BETRAY, adapter.convertDecisionToTribeAction(Decision.TRAHIR));
+		Assertions.assertEquals(TribeAction.COOPERATE, adapter.convertDecisionToTribeAction(Decision.COOPERER));
+		game.playTurn(TribeAction.BETRAY, 0);
+		game2.playTurn(TribeAction.BETRAY, 0);
+		Assertions.assertEquals(TribeAction.BETRAY, game.getPreviousTurnAction(1));
+		Assertions.assertEquals(TribeAction.COOPERATE, game2.getPreviousTurnAction(1));
+
+		List<Decision> ld = new ArrayList<Decision>();
+		ld.add(0, Decision.TRAHIR);
+		Assertions.assertEquals(ld, ((Adapter) game.getTribes()[1].getStrategy()).convertGameToDecisionList(game));
+		ld.remove(0);
+		ld.add(0, Decision.COOPERER);
+		Assertions.assertEquals(ld, ((Adapter) game2.getTribes()[1].getStrategy()).convertGameToDecisionList(game2));
+
+		Assertions.assertEquals(TribeAction.BETRAY, game.getTribes()[1].getStrategy().calculateAction(game));
+		Assertions.assertEquals(TribeAction.COOPERATE, game2.getTribes()[1].getStrategy().calculateAction(game2));
 	}
 
 }
