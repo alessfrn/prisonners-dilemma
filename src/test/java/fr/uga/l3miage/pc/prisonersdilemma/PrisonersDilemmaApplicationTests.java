@@ -54,7 +54,8 @@ class PrisonersDilemmaApplicationTests {
 
 	@Test
 	void testGameCreation() {
-		Assertions.assertThrows(IllegalArgumentException.class, () -> { gameManager.startNewGame(0, GameType.AI, tribeGenerator()); });
+		Tribe tribe = tribeGenerator();
+		Assertions.assertThrows(IllegalArgumentException.class, () -> gameManager.startNewGame(0, GameType.AI, tribe));
 		Assertions.assertNotNull(gameManager.startNewGame(1, GameType.AI, tribeGenerator()));
 	}
 
