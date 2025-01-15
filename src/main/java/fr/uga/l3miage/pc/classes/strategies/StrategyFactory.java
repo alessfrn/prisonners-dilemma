@@ -6,32 +6,32 @@ import fr.uga.l3miage.pc.enums.Strategies;
 public class StrategyFactory {
     public Strategy createStrategy(Strategies strategy) {
         switch(strategy) {
-            case AlwaysBetray:
+            case ALWAYS_BETRAY:
                 return new AlwaysBetray();
-            case AlwaysCooperate:
+            case ALWAYS_COOPERATE:
                 return new AlwaysCooperate();
-            case PavlovRandom:
+            case PAVLOV_RANDOM:
                 return new PavlovRandom();
-            case TruePeacemaker:
+            case TRUE_PEACEMAKER:
                 return new TruePeacemaker();
-            case GiveAndTake:
+            case GIVE_AND_TAKE:
                 return new GiveAndTake();
-            case GiveAndTakeRandom:
+            case GIVE_AND_TAKE_RANDOM:
                 return new GiveAndTakeRandom();
-            case GiveAndTake2:
+            case GIVE_AND_TAKE_2:
                 return new GiveAndTake2();
-            case GiveAndTakeRandom2:
+            case GIVE_AND_TAKE_RANDOM_2:
                 return new GiveAndTakeRandom2();
-            case NaiveProber:
+            case NAIVE_PROBER:
                 return new NaiveProber();
-            case RepentantProber:
+            case REPENTANT_PROBER:
                 return new RepentantProber();
-            case Random:
+            case RANDOM:
                 return new Random();
-            case AlwaysBetrayFromRachid:
-                return new Adapter(Strategies.AlwaysBetrayFromRachid);
-            case AlwaysCooperateFromRachid:
-                return new Adapter(Strategies.AlwaysCooperateFromRachid);
+            case ALWAYS_BETRAY_FROM_RACHID:
+                return new Adapter(Strategies.ALWAYS_BETRAY_FROM_RACHID);
+            case ALWAYS_COOPERATE_FROM_RACHID:
+                return new Adapter(Strategies.ALWAYS_COOPERATE_FROM_RACHID);
             default:
                 return createStrategy(Strategies.getRandomStrategy());
         }

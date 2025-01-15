@@ -16,7 +16,6 @@ import fr.uga.miage.m1.my_projet_g1_10.strategies.ToujoursCooperer;
 import fr.uga.miage.m1.my_projet_g1_10.strategies.ToujoursTrahir;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -49,7 +48,7 @@ class PrisonersDilemmaApplicationTests {
 	void testGetRandomStrategy() {
 		gameManager.changeRandom(mockedRandom);
 		when(mockedRandom.nextInt(strategiesNumber)).thenReturn(0);
-		Assertions.assertEquals(Strategies.GiveAndTake, Strategies.getRandomStrategy());
+		Assertions.assertEquals(Strategies.GIVE_AND_TAKE, Strategies.getRandomStrategy());
 		Assertions.assertInstanceOf(GiveAndTake.class, GameManager.getInstance().getRandomStrategy());
 	}
 
@@ -351,12 +350,12 @@ class PrisonersDilemmaApplicationTests {
 		Game game = gameManager.startNewGame(5, GameType.AI, tribeGenerator());
 		Assertions.assertInstanceOf(Adapter.class, game.getTribes()[1].getStrategy());
 		Adapter adapter = (Adapter) game.getTribes()[1].getStrategy();
-		Assertions.assertInstanceOf(ToujoursTrahir.class, adapter.strategyFromRachid);
+		Assertions.assertInstanceOf(ToujoursTrahir.class, adapter.getStrategyFromRachid());
 		when(mockedRandom.nextInt(strategiesNumber)).thenReturn(20);
 		Game game2 = gameManager.startNewGame(5, GameType.AI, tribeGenerator());
 		Assertions.assertInstanceOf(Adapter.class, game2.getTribes()[1].getStrategy());
 		Adapter adapter2 = (Adapter) game2.getTribes()[1].getStrategy();
-		Assertions.assertInstanceOf(ToujoursCooperer.class, adapter2.strategyFromRachid);
+		Assertions.assertInstanceOf(ToujoursCooperer.class, adapter2.getStrategyFromRachid());
 
 		Assertions.assertEquals(Decision.COOPERER, adapter.convertTribeActionToDecision(TribeAction.COOPERATE));
 		Assertions.assertEquals(Decision.TRAHIR, adapter.convertTribeActionToDecision(TribeAction.BETRAY));

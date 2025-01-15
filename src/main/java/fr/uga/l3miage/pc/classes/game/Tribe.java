@@ -2,11 +2,8 @@ package fr.uga.l3miage.pc.classes.game;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import fr.uga.l3miage.pc.classes.strategies.Strategy;
-import fr.uga.l3miage.pc.enums.Strategies;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.UUID;
 
 @Getter
 public class Tribe {

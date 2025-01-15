@@ -5,6 +5,7 @@ import fr.uga.l3miage.pc.enums.GameStatus;
 import fr.uga.l3miage.pc.enums.GameType;
 import fr.uga.l3miage.pc.enums.TribeAction;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,6 +16,7 @@ import static java.lang.Math.abs;
 import static java.lang.Math.max;
 
 @Getter
+@Slf4j
 public class Game {
     @JsonIgnore
     private final Turn[] turns;
@@ -61,7 +63,7 @@ public class Game {
             try {
                 resolveActions(turnActions[0], turnActions[1]);
             } catch (IllegalStateException e) {
-                System.out.println(e.getMessage());
+                log.error(e.getMessage());
             }
         }
     }
@@ -72,16 +74,15 @@ public class Game {
     }
 
     public void resolveActions(TribeAction player1Action, TribeAction player2Action) throws IllegalStateException {
-        if ((player1Action.equals(TribeAction.LEAVE) && gameType.equals(GameType.AI)) || (player2Action.equals(TribeAction.LEAVE) && gameType.equals(GameType.AI)) || (player1Action.equals(TribeAction.LEAVE) && player2Action.equals(TribeAction.LEAVE))) {
+        if (shouldEndGameForLeaving(player1Action, player2Action)) {
             GameManager.getInstance().endGame(this, true);
             return;
-        } else if (player1Action.equals(TribeAction.LEAVE)) {
-            replacePlayerWithAI(0);
-            player1Action = tribes[0].getStrategy().calculateAction(this);
-        } else if (player2Action.equals(TribeAction.LEAVE)) {
-            replacePlayerWithAI(1);
-            player2Action = tribes[1].getStrategy().calculateAction(this);
         }
+
+        TribeAction[] actions = handlePlayerLeaving(player1Action, player2Action);
+        player1Action = actions[0];
+        player2Action = actions[1];
+
         if (player1Action.equals(TribeAction.COOPERATE) && player2Action.equals(TribeAction.COOPERATE)) {
             turns[currentTurn] = new Turn(new TurnAction(player1Action, 3), new TurnAction(player2Action, 3));
         } else if (player1Action.equals(TribeAction.BETRAY) && player2Action.equals(TribeAction.BETRAY)) {
@@ -100,6 +101,23 @@ public class Game {
         turnActions[0] = null;
         turnActions[1] = null;
         gameStatus = GameStatus.WAITING_BOTH;
+    }
+
+    private TribeAction[] handlePlayerLeaving(TribeAction player1Action, TribeAction player2Action) {
+        if (player1Action.equals(TribeAction.LEAVE)) {
+            replacePlayerWithAI(0);
+            player1Action = tribes[0].getStrategy().calculateAction(this);
+        } else if (player2Action.equals(TribeAction.LEAVE)) {
+            replacePlayerWithAI(1);
+            player2Action = tribes[1].getStrategy().calculateAction(this);
+        }
+        return new TribeAction[]{player1Action, player2Action};
+    }
+
+    private boolean shouldEndGameForLeaving(TribeAction player1Action, TribeAction player2Action) {
+        return (player1Action.equals(TribeAction.LEAVE) && gameType.equals(GameType.AI)) ||
+                (player2Action.equals(TribeAction.LEAVE) && gameType.equals(GameType.AI)) ||
+                (player1Action.equals(TribeAction.LEAVE) && player2Action.equals(TribeAction.LEAVE));
     }
 
     public int fetchPreviousSystemTurnScoring() throws IllegalStateException {
@@ -133,7 +151,7 @@ public class Game {
         } else {
             gameStatus = GameStatus.COMPLETED;
         }
-        Arrays.stream(tribes).forEach(tribe -> { tribe.setGame(null); });
+        Arrays.stream(tribes).forEach(tribe -> tribe.setGame(null));
     }
 
     public void startGame() throws IllegalStateException {

@@ -7,6 +7,7 @@ import fr.uga.l3miage.pc.classes.game.Tribe;
 import fr.uga.l3miage.pc.enums.GameStatus;
 import fr.uga.l3miage.pc.enums.Strategies;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.MessageDeliveryException;
@@ -20,10 +21,13 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Controller
+@Slf4j
 public class WebSocketController {
     @Getter
     Map<UUID, Tribe> world = new ConcurrentHashMap<>();
     private final SimpMessagingTemplate template ;
+
+    private static final String STATUS_STRING = "/queue/status/";
 
     @Autowired
     public WebSocketController(SimpMessagingTemplate template) {
@@ -34,7 +38,7 @@ public class WebSocketController {
     @SendToUser("queue/register")
     public String registerPlayer(@Header("simpSessionId") String sessionId) {
         UUID uuid = UUID.fromString(sessionId);
-        world.put(uuid, new Tribe(GameManager.getInstance().getStrategyFactory().createStrategy(Strategies.GetRandomStrategy), true));
+        world.put(uuid, new Tribe(GameManager.getInstance().getStrategyFactory().createStrategy(Strategies.GET_RANDOM_STRATEGY), true));
         return uuid.toString();
     }
 
@@ -66,9 +70,9 @@ public class WebSocketController {
         Game game = GameManager.getInstance().findGameWithID(gameConfig.getGameId());
         game.joinGame(world.get(gameConfig.getUserId()));
         try {
-            template.convertAndSend("/queue/status/" + game.getId().toString(), getGameStatus(game.getGameStatus()));
+            template.convertAndSend(STATUS_STRING + game.getId().toString(), getGameStatus(game.getGameStatus()));
         } catch (MessageDeliveryException e) {
-            System.out.println("Cannot send message");
+            log.warn("Could not send status message...");
         }
     }
 
@@ -77,9 +81,9 @@ public class WebSocketController {
         Game game = world.get(gameConfig.getUserId()).getGame();
         game.playTurn(gameConfig.getAction(), gameConfig.getPlayerIndex());
         try {
-            template.convertAndSend("/queue/status/" + game.getId().toString(), getGameStatus(game.getGameStatus()));
+            template.convertAndSend(STATUS_STRING + game.getId().toString(), getGameStatus(game.getGameStatus()));
         } catch (MessageDeliveryException e) {
-            System.out.println("Cannot send message");
+            log.warn("Could not send status message...");
         }
     }
 
@@ -88,7 +92,7 @@ public class WebSocketController {
         Tribe userTribe = world.get(UUID.fromString(event.getSessionId()));
         if (userTribe.getGame() != null) {
             GameManager.getInstance().disconnectUser(userTribe);
-            template.convertAndSend("/queue/status/" + userTribe.getGame().getId().toString(), getGameStatus(userTribe.getGame().getGameStatus()));
+            template.convertAndSend(STATUS_STRING + userTribe.getGame().getId().toString(), getGameStatus(userTribe.getGame().getGameStatus()));
         }
     }
 

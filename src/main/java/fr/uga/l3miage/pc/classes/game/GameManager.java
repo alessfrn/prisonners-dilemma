@@ -6,11 +6,13 @@ import fr.uga.l3miage.pc.enums.GameType;
 import fr.uga.l3miage.pc.enums.Strategies;
 import fr.uga.l3miage.pc.enums.TribeAction;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.security.SecureRandom;
 import java.util.*;
 
 @Getter
+@Slf4j
 public class GameManager {
     private static GameManager instance;
 
@@ -43,7 +45,7 @@ public class GameManager {
             try {
                 newGame.joinGame(new Tribe(getRandomStrategy(), false));
             } catch (IllegalStateException e) {
-                System.out.println(e.getMessage());
+                log.error(e.getMessage());
             }
         } else {
             newGame.openLobby();
@@ -67,7 +69,7 @@ public class GameManager {
     }
 
     public Game findGameWithID(UUID gameId) throws NoSuchElementException {
-        return activeGames.stream().filter((x) -> x.getId().equals(gameId)).findFirst().orElseThrow();
+        return activeGames.stream().filter(x -> x.getId().equals(gameId)).findFirst().orElseThrow();
     }
 
     public void disconnectUser(Tribe tribe) {

@@ -8,21 +8,26 @@ import fr.uga.miage.m1.my_projet_g1_10.enums.Decision;
 import fr.uga.miage.m1.my_projet_g1_10.enums.Strategie;
 import fr.uga.miage.m1.my_projet_g1_10.strategies.IStrategie;
 import fr.uga.miage.m1.my_projet_g1_10.strategiesCreators.StrategieFactory;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
+@Slf4j
+@Getter
 public class Adapter implements Strategy {
-    public IStrategie strategyFromRachid;
+    private final IStrategie strategyFromRachid;
+
 
     public Adapter(Strategies s) {
         this.strategyFromRachid = StrategieFactory.getStrategie(convertMyEnumToRachidEnum(s));
     }
     public Strategie convertMyEnumToRachidEnum(Strategies s) {
         return switch (s) {
-            case AlwaysBetrayFromRachid -> Strategie.TOUJOURSTRAHIR;
-            case AlwaysCooperateFromRachid -> Strategie.TOUJOURSCOOPERER;
+            case ALWAYS_BETRAY_FROM_RACHID -> Strategie.TOUJOURSTRAHIR;
+            case ALWAYS_COOPERATE_FROM_RACHID -> Strategie.TOUJOURSCOOPERER;
             default -> {
-                System.out.println("ERROR: Unhandled strategy");
+                log.error("Unhandled strategy");
                 yield null;
             }
         };
